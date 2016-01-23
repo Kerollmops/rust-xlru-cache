@@ -144,6 +144,13 @@ impl<K, V, S> LruCache<K, V, S> where K: Eq + Hash, S: BuildHasher {
         self.map.get_refresh(k)
     }
 
+    pub fn peek_mut<Q: ?Sized>(&mut self, k: &Q) -> Option<&mut V>
+        where K: Borrow<Q>,
+              Q: Hash + Eq
+    {
+        self.map.get_mut(k)
+    }
+
     /// Removes the given key from the cache and returns its corresponding value.
     ///
     /// # Examples
