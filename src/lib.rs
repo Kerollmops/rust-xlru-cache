@@ -52,8 +52,7 @@ mod heapsize;
 // FIXME(conventions): implement indexing?
 
 /// An LRU cache.
-#[derive(Clone)]
-pub struct LruCache<K: Eq + Hash, V, S: BuildHasher = RandomState> {
+pub struct LruCache<K, V, S: BuildHasher = RandomState> {
     map: LinkedHashMap<K, V, S>,
     max_size: usize,
 }
@@ -344,6 +343,15 @@ impl<'a, K: Eq + Hash, V, S: BuildHasher> IntoIterator for &'a mut LruCache<K, V
     type Item = (&'a K, &'a mut V);
     type IntoIter = IterMut<'a, K, V>;
     fn into_iter(self) -> IterMut<'a, K, V> { self.iter_mut() }
+}
+
+impl<K: Hash + Eq + Clone, V: Clone, S: BuildHasher + Clone> Clone for LruCache<K, V, S> {
+    fn clone(&self) -> Self {
+        LruCache {
+            map: self.map.clone(),
+            max_size: self.max_size,
+        }
+    }
 }
 
 /// An iterator over a cache's key-value pairs in least- to most-recently-used order.
