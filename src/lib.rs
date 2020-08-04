@@ -114,12 +114,10 @@ impl<K: Eq + Hash, V, S: BuildHasher> LruCache<K, V, S> {
     /// assert_eq!(cache.get_mut(&1), Some(&mut "a"));
     /// assert_eq!(cache.get_mut(&2), Some(&mut "b"));
     /// ```
-    pub fn insert(&mut self, k: K, v: V) -> Option<V> {
+    pub fn insert(&mut self, k: K, v: V) -> (Option<V>, Option<(K, V)>) {
         let old_val = self.map.insert(k, v);
-        if self.len() > self.capacity() {
-            self.remove_lru();
-        }
-        old_val
+        let lru = if self.len() > self.capacity() { self.remove_lru() } else { None };
+        (old_val, lru)
     }
 
     /// Returns a mutable reference to the value corresponding to the given key in the cache, if
